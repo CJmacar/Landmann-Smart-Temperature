@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Landmann_Smart_TemperatureApp.body.getter:Landmann_Smart_TemperatureApp.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in ContentView.body.getter:ContentView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "BluetoothManager.centralManagerDidUpdateState(_:):ContentView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "BluetoothManager.centralManager(_:didDiscover:advertisementData:rssi:):ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "BluetoothManager.init():ContentView.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
