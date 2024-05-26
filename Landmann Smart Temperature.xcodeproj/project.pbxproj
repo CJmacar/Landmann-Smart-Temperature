@@ -14,6 +14,8 @@
 		01B5DA152BAB72EA00A58348 /* Landmann_Smart_TemperatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B5DA142BAB72EA00A58348 /* Landmann_Smart_TemperatureTests.swift */; };
 		01B5DA1F2BAB72EA00A58348 /* Landmann_Smart_TemperatureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B5DA1E2BAB72EA00A58348 /* Landmann_Smart_TemperatureUITests.swift */; };
 		01B5DA212BAB72EA00A58348 /* Landmann_Smart_TemperatureUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B5DA202BAB72EA00A58348 /* Landmann_Smart_TemperatureUITestsLaunchTests.swift */; };
+		01CB0B5B2C03EA670032B2D7 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CB0B5A2C03EA670032B2D7 /* BluetoothManager.swift */; };
+		01CB0B5D2C03EAEB0032B2D7 /* GaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CB0B5C2C03EAEB0032B2D7 /* GaugeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +47,8 @@
 		01B5DA1A2BAB72EA00A58348 /* Landmann Smart TemperatureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Landmann Smart TemperatureUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01B5DA1E2BAB72EA00A58348 /* Landmann_Smart_TemperatureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landmann_Smart_TemperatureUITests.swift; sourceTree = "<group>"; };
 		01B5DA202BAB72EA00A58348 /* Landmann_Smart_TemperatureUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landmann_Smart_TemperatureUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		01CB0B5A2C03EA670032B2D7 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		01CB0B5C2C03EAEB0032B2D7 /* GaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +104,8 @@
 				01B5DA062BAB72EA00A58348 /* Assets.xcassets */,
 				01B5DA082BAB72EA00A58348 /* Landmann_Smart_Temperature.entitlements */,
 				01B5DA092BAB72EA00A58348 /* Preview Content */,
+				01CB0B5A2C03EA670032B2D7 /* BluetoothManager.swift */,
+				01CB0B5C2C03EAEB0032B2D7 /* GaugeView.swift */,
 			);
 			path = "Landmann Smart Temperature";
 			sourceTree = "<group>";
@@ -260,6 +266,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				01B5DA052BAB72E600A58348 /* ContentView.swift in Sources */,
+				01CB0B5B2C03EA670032B2D7 /* BluetoothManager.swift in Sources */,
+				01CB0B5D2C03EAEB0032B2D7 /* GaugeView.swift in Sources */,
 				01B5DA032BAB72E600A58348 /* Landmann_Smart_TemperatureApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
