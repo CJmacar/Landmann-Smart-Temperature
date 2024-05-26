@@ -1,157 +1,221 @@
 import SwiftUI
 import CoreBluetooth
 
-struct GaugeView: View {
-    @Binding var value: Float
-    var maxValue: Float
-    @Binding var threshold: Float
-    let color: Color
-    
-    @State private var isAboveThreshold = false
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-            let radius = min(geometry.size.width, geometry.size.height) / 2
-            let thresholdAngle = Double(threshold / maxValue) * 360 - 90
-            let thresholdPoint = CGPoint(x: center.x + radius * cos(thresholdAngle * .pi / 180),
-                                         y: center.y + radius * sin(thresholdAngle * .pi / 180))
-            
-            ZStack {
-                Circle()
-                    .stroke(Color.gray, lineWidth: 10)
-                Circle()
-                    .trim(from: 0, to: CGFloat(value / maxValue))
-                    .stroke(color, style: StrokeStyle(lineWidth: 10, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .animation(.none) // No animation for gauge
-                Circle()
-                    .stroke(Color.black, lineWidth: 2)
-                    .frame(width: 10, height: 10)
-                    .foregroundColor(Color.yellow)
-                    .position(thresholdPoint)
-                Text(String(format: "%.1f°C", value))
-                    .foregroundColor(.black)
-                    .font(.body)
-                    .offset(x: 0, y: 10)
-            }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-            .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
-                self.isAboveThreshold = value > threshold
-            }
-            if isAboveThreshold {
-                Text("Temperature is above threshold")
-                    .foregroundColor(.red)
-                    .font(.headline)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .padding(20)
-                    .transition(.move(edge: .bottom))
-            }
-        }
+struct ScannedDevice: Equatable, Hashable {
+    let peripheral: CBPeripheral
+    let advertisementData: [String: Any]
+    let rssi: NSNumber
+
+    static func ==(lhs: ScannedDevice, rhs: ScannedDevice) -> Bool {
+        return lhs.peripheral.identifier == rhs.peripheral.identifier
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(peripheral.identifier)
     }
 }
 
-
-
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
-    let centralManager = CBCentralManager()
-    var peripheral: CBPeripheral?
-    
-    let deviceUUIDString = "CD44507B-063E-506B-2FFE-215D8F2D3554"
-    let temperatureServiceUUID = CBUUID(string: "1000")
-    let temperatureCharacteristicUUID = CBUUID(string: "1002")
-    
+    private var centralManager: CBCentralManager!
+    private var selectedPeripheral: CBPeripheral?
+    @Published var scannedDevices: [ScannedDevice] = []
     @Published var temperatureP1: Float = 0
     @Published var temperatureP2: Float = 0
-    @Published var thresholdP1: Float = 0
-    @Published var thresholdP2: Float = 0
-    
+    @Published var thresholdP1: Float = 65
+    @Published var thresholdP2: Float = 65
+
     override init() {
         super.init()
-        centralManager.delegate = self
+        centralManager = CBCentralManager(delegate: self, queue: nil)
     }
-    
+
+    func scanForPeripherals() {
+        scannedDevices.removeAll()
+        centralManager.scanForPeripherals(withServices: nil, options: nil)
+    }
+
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            centralManager.scanForPeripherals(withServices: [temperatureServiceUUID], options: nil)
+            scanForPeripherals()
         } else {
             print("Bluetooth not available.")
         }
     }
-    
+
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if let deviceUUID = UUID(uuidString: deviceUUIDString),
-           peripheral.identifier == deviceUUID {
-            self.peripheral = peripheral
-            peripheral.delegate = self
-            centralManager.stopScan()
-            centralManager.connect(peripheral)
+        let scannedDevice = ScannedDevice(peripheral: peripheral, advertisementData: advertisementData, rssi: RSSI)
+        if !scannedDevices.contains(scannedDevice) {
+            scannedDevices.append(scannedDevice)
         }
     }
-    
+
+    func connectToDevice(_ peripheral: CBPeripheral) {
+        selectedPeripheral = peripheral
+        selectedPeripheral?.delegate = self
+        centralManager.connect(selectedPeripheral!)
+    }
+
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        peripheral.discoverServices([temperatureServiceUUID])
+        peripheral.discoverServices([CBUUID(string: "1000")])
     }
-    
+
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        guard let services = peripheral.services else { return }
-        for service in services {
-            if service.uuid == temperatureServiceUUID {
-                peripheral.discoverCharacteristics(nil, for: service)
-            }
-        }
-    }
-    
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard let characteristics = service.characteristics else { return }
-        for characteristic in characteristics {
-            if characteristic.uuid == temperatureCharacteristicUUID {
-                peripheral.setNotifyValue(true, for: characteristic)
-            }
-        }
-    }
-    
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if characteristic.uuid == temperatureCharacteristicUUID {
-            if let temperatureData = characteristic.value {
-                // Assuming temperature data is represented as a single float value
-                let temperature: Float = temperatureData.withUnsafeBytes { $0.load(as: Float.self) }
-                // Assuming temperature data is for P1 and P2 sensors
-                if characteristic.value?.count ?? 0 >= 17 {
-                    temperatureP1 = Float(temperatureData[3]*10 + temperatureData[4] >> 4)
-                    temperatureP2 = Float(temperatureData[5]*10 + temperatureData[6] >> 4)
+        if let services = peripheral.services {
+            for service in services {
+                if service.uuid == CBUUID(string: "1000") {
+                    peripheral.discoverCharacteristics([CBUUID(string: "1002")], for: service)
                 }
+            }
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        if let characteristics = service.characteristics {
+            for characteristic in characteristics {
+                if characteristic.uuid == CBUUID(string: "1002") {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+            }
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if characteristic.uuid == CBUUID(string: "1002"), let temperatureData = characteristic.value, temperatureData.count >= 6 {
+            
+            let temperatureP1Celsius = Float(Int16(temperatureData[3]) * 10 + (Int16(temperatureData[4]) >> 4))
+            let temperatureP2Celsius = Float(Int16(temperatureData[5]) * 10 + (Int16(temperatureData[6]) >> 4))
+        
+            DispatchQueue.main.async {
+                if peripheral == self.selectedPeripheral {
+                    self.temperatureP1 = (temperatureP1Celsius == 1440.0 ? 0.0 : temperatureP1Celsius)
+                    self.temperatureP2 = (temperatureP2Celsius == 1440.0 ? 0.0 : temperatureP2Celsius)
+                }
+            }
+        }
+    }
+
+    func updateThreshold() {
+        // Implement threshold update logic here
+    }
+}
+
+struct ContentView: View {
+    @ObservedObject private var bluetoothManager = BluetoothManager()
+    @State private var isMenuOpen = false
+    @State private var selectedDevice: ScannedDevice?
+    @State private var thresholdP1: Float = 65
+    @State private var thresholdP2: Float = 65
+
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button(action: {
+                    bluetoothManager.scanForPeripherals()
+                    isMenuOpen.toggle()
+                }) {
+                    Image(systemName: "ellipsis.circle")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .padding()
+            }
+
+            Spacer()
+
+            GaugeView(value: $bluetoothManager.temperatureP1, maxValue: 100, threshold: $thresholdP1, color: .blue)
+                .frame(width: 200, height: 200)
+                .padding()
+            HStack {
+                Slider(value: $thresholdP1, in: 0...100, step: 1)
+                Text("\(Int(thresholdP1))°")
+                    .foregroundColor(.white)
+                    .padding(5)
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(5)
+            }
+            .padding(.horizontal)
+
+            GaugeView(value: $bluetoothManager.temperatureP2, maxValue: 100, threshold: $thresholdP2, color: .green)
+                .frame(width: 200, height: 200)
+                .padding()
+            HStack {
+                Slider(value: $thresholdP2, in: 0...100, step: 1)
+                Text("\(Int(thresholdP2))°")
+                    .foregroundColor(.white)
+                    .padding(5)
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(5)
+            }
+            .padding(.horizontal)
+
+            Spacer()
+        }
+        .popover(isPresented: $isMenuOpen, arrowEdge: .top) {
+            VStack {
+                List {
+                    ForEach(bluetoothManager.scannedDevices, id: \.self) { device in
+                        Button(action: {
+                            selectedDevice = device
+                            bluetoothManager.connectToDevice(device.peripheral)
+                            isMenuOpen.toggle()
+                        }) {
+                            Text(device.peripheral.name ?? "Unknown Device")
+                        }
+                    }
+                }
+                .frame(width: 200)
+            }
+        }
+        .onChange(of: bluetoothManager.temperatureP1) {
+            bluetoothManager.updateThreshold()
+        }
+        .onChange(of: bluetoothManager.temperatureP2) {
+        }
+    }
+}
+
+struct GaugeView: View {
+    @Binding var value: Float
+    var maxValue: Float
+    @Binding var threshold: Float
+    var color: Color
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Circle()
+                    .stroke(Color.gray, lineWidth: 10)
+                Circle()
+                    .trim(from: 0, to: CGFloat(min(value / maxValue, 1)))
+                    .stroke(color, style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut, value: value)
+                Text("\(Int(value))°")
+                    .font(.title)
+                    .foregroundColor(value >= threshold ? .red : .white)
+                    .padding(5)
+                    .background(value >= threshold ? Color.black.opacity(0.7) : Color.clear)
+                    .cornerRadius(5)
+                    .padding()
+                ThresholdMark(threshold: threshold, maxValue: maxValue, radius: geometry.size.width / 2)
+                    .foregroundColor(.yellow)
             }
         }
     }
 }
 
-struct ContentView: View {
-    @StateObject private var bluetoothManager = BluetoothManager()
-    
+struct ThresholdMark: View {
+    var threshold: Float
+    var maxValue: Float
+    var radius: CGFloat
+
     var body: some View {
-        VStack {
-            GaugeView(value: $bluetoothManager.temperatureP1, maxValue: 100, threshold: $bluetoothManager.thresholdP1, color: .blue)
-                .padding()
-            HStack {
-                Text("Temperature P1:")
-                Slider(value: $bluetoothManager.thresholdP1, in: 0...100)
-                    .padding(.horizontal)
-                    .accentColor(.blue) // Optional: Set the slider color to match the gauge
-                Text("\(bluetoothManager.thresholdP1, specifier: "%.1f")°C")
-            }
-            GaugeView(value: $bluetoothManager.temperatureP2, maxValue: 100, threshold: $bluetoothManager.thresholdP2, color: .red)
-                .padding()
-            HStack {
-                Text("Temperature P2:")
-                Slider(value: $bluetoothManager.thresholdP2, in: 0...100)
-                    .padding(.horizontal)
-                    .accentColor(.red) // Optional: Set the slider color to match the gauge
-                Text("\(bluetoothManager.thresholdP2, specifier: "%.1f")°C")
-            }
-        }
-        .padding()
+        let angle = Double(threshold / maxValue) * 360.0 - 90
+
+        return Circle()
+            .frame(width: 10, height: 10)
+            .foregroundColor(.yellow)
+            .offset(x: radius * CGFloat(cos(angle * .pi / 180)), y: radius * CGFloat(sin(angle * .pi / 180)))
     }
 }
