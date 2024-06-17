@@ -1,18 +1,5 @@
+import Foundation
 import CoreBluetooth
-
-struct ScannedDevice: Equatable, Hashable {
-    let peripheral: CBPeripheral
-    let advertisementData: [String: Any]
-    let rssi: NSNumber
-
-    static func ==(lhs: ScannedDevice, rhs: ScannedDevice) -> Bool {
-        return lhs.peripheral.identifier == rhs.peripheral.identifier
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(peripheral.identifier)
-    }
-}
 
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     private var centralManager: CBCentralManager!
@@ -80,7 +67,6 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if characteristic.uuid == CBUUID(string: "1002"), let temperatureData = characteristic.value, temperatureData.count >= 6 {
-            
             let temperatureP1Celsius = Float(Int16(temperatureData[3]) * 10 + (Int16(temperatureData[4]) >> 4))
             let temperatureP2Celsius = Float(Int16(temperatureData[5]) * 10 + (Int16(temperatureData[6]) >> 4))
         
@@ -94,7 +80,26 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
 
     func updateThreshold() {
-        // Implement threshold update logic here
+        #if os(iOS)
+        // iOS-specific code
+        print("Updating threshold on iOS")
+        #elseif os(macOS)
+        // macOS-specific code
+        print("Updating threshold on macOS")
+        #endif
     }
 }
 
+struct ScannedDevice: Equatable, Hashable {
+    let peripheral: CBPeripheral
+    let advertisementData: [String: Any]
+    let rssi: NSNumber
+
+    static func ==(lhs: ScannedDevice, rhs: ScannedDevice) -> Bool {
+        return lhs.peripheral.identifier == rhs.peripheral.identifier
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(peripheral.identifier)
+    }
+}

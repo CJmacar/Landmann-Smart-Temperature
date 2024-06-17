@@ -15,3 +15,8 @@ struct Landmann_Smart_TemperatureApp: App {
         }
     }
 }
+
+#Preview {
+   ContentView()
+}
+
