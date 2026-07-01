@@ -53,6 +53,22 @@ This creates an `.xcarchive` under `build/` and exports an `.ipa` using `ExportO
 
 Upload the `.ipa` with [Transporter](https://apps.apple.com/app/transporter/id1450874784) or Xcode Organizer.
 
+## Build on GitHub Actions
+
+You can build and deploy from GitHub using macOS runners.
+
+| Workflow | When it runs | What it does |
+|----------|--------------|--------------|
+| `ios-build.yml` | Every push/PR to `main` | Compile-check on iOS Simulator (no secrets) |
+| `ios-deploy.yml` | Manual run or `v*` tag | Archive, export `.ipa`, upload to TestFlight |
+
+Setup steps (certificates, provisioning profile, App Store Connect API key, and GitHub secrets) are documented in [docs/github-actions-setup.md](docs/github-actions-setup.md).
+
+Quick start after secrets are configured:
+
+1. Open **Actions → iOS Deploy → Run workflow**, or
+2. Push a version tag: `git tag v1.0.0 && git push origin v1.0.0`
+
 ## App Store checklist
 
 Before submitting, confirm:
@@ -71,6 +87,8 @@ Before submitting, confirm:
 | `Landmann Smart Temperature.xcodeproj/xcshareddata/xcschemes/` | Shared scheme for CI/archive builds |
 | `ExportOptions.plist` | App Store export settings |
 | `scripts/archive-ios.sh` | Command-line archive helper |
+| `.github/workflows/` | GitHub Actions build and deploy workflows |
+| `docs/github-actions-setup.md` | CI signing and TestFlight setup guide |
 
 ## Notes
 
