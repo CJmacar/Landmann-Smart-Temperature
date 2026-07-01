@@ -42,6 +42,7 @@
 		01B5DA042BAB72E600A58348 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		01B5DA062BAB72EA00A58348 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		01B5DA082BAB72EA00A58348 /* Landmann_Smart_Temperature.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Landmann_Smart_Temperature.entitlements; sourceTree = "<group>"; };
+		01E391012F00000100A58348 /* Landmann_Smart_Temperature_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Landmann_Smart_Temperature_macOS.entitlements; sourceTree = "<group>"; };
 		01B5DA0A2BAB72EA00A58348 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		01B5DA102BAB72EA00A58348 /* Landmann Smart TemperatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Landmann Smart TemperatureTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01B5DA142BAB72EA00A58348 /* Landmann_Smart_TemperatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landmann_Smart_TemperatureTests.swift; sourceTree = "<group>"; };
@@ -108,6 +109,7 @@
 				01CB0B622C0E56320032B2D7 /* DeviceSelectionView.swift */,
 				01B5DA062BAB72EA00A58348 /* Assets.xcassets */,
 				01B5DA082BAB72EA00A58348 /* Landmann_Smart_Temperature.entitlements */,
+				01E391012F00000100A58348 /* Landmann_Smart_Temperature_macOS.entitlements */,
 				01B5DA092BAB72EA00A58348 /* Preview Content */,
 			);
 			path = "Landmann Smart Temperature";
@@ -429,14 +431,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Landmann Smart Temperature/Landmann_Smart_Temperature.entitlements";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Landmann Smart Temperature/Landmann_Smart_Temperature_macOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Landmann Smart Temperature/Preview Content\"";
 				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Uses BLE";
+				INFOPLIST_KEY_CFBundleDisplayName = "Landmann Temp";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app uses Bluetooth to connect to your Landmann smart barbecue thermometer and display live temperature readings.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This app uses Bluetooth to connect to your Landmann smart barbecue thermometer and display live temperature readings.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -468,14 +473,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Landmann Smart Temperature/Landmann_Smart_Temperature.entitlements";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Landmann Smart Temperature/Landmann_Smart_Temperature_macOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Landmann Smart Temperature/Preview Content\"";
 				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Uses BLE";
+				INFOPLIST_KEY_CFBundleDisplayName = "Landmann Temp";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app uses Bluetooth to connect to your Landmann smart barbecue thermometer and display live temperature readings.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This app uses Bluetooth to connect to your Landmann smart barbecue thermometer and display live temperature readings.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -508,6 +516,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -530,6 +539,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -551,6 +561,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -572,6 +583,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7FM6FWB8JC;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;

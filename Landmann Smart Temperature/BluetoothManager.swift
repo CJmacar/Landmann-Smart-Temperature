@@ -66,7 +66,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if characteristic.uuid == CBUUID(string: "1002"), let temperatureData = characteristic.value, temperatureData.count >= 6 {
+        if characteristic.uuid == CBUUID(string: "1002"), let temperatureData = characteristic.value, temperatureData.count >= 7 {
             let temperatureP1Celsius = Float(Int16(temperatureData[3]) * 10 + (Int16(temperatureData[4]) >> 4))
             let temperatureP2Celsius = Float(Int16(temperatureData[5]) * 10 + (Int16(temperatureData[6]) >> 4))
         
