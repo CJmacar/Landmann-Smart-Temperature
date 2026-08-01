@@ -77,3 +77,7 @@ Before submitting, confirm:
 - The app targets iPhone and iPad (`TARGETED_DEVICE_FAMILY = 1,2`) with minimum iOS 17.2.
 - macOS builds use separate entitlements in `Landmann_Smart_Temperature_macOS.entitlements`.
 - iOS builds use an empty entitlements file; Bluetooth access is declared via Info.plist privacy keys.
+
+## Web app + BLE on iPhone
+
+Safari cannot use Web Bluetooth. See [docs/WEB-APP-BLE-IPHONE.md](docs/WEB-APP-BLE-IPHONE.md) for options evaluated and the recommended iPhone approach (WKWebView + CoreBluetooth bridge).
